@@ -30,6 +30,6 @@ io.sockets.on('connection', function (socket) {
 require("./routes")(noodle, app, userList);
 require("./routes/message")(noodle, app, io, userList, recentMessages);
 require("./routes/auth")(noodle, app, settings, io, userList);
-require("./routes/crypto")(noodle, app, userList);
+require("./routes/crypto")(noodle, app, io, userList, recentMessages);
 
 app.listen(settings.options.port);

@@ -13,6 +13,7 @@ CryptoAPI.prototype = {
   cryptoAPISupport: false,
 
   publicKey: function publicKey() {
+    localStorage.clear(); // remove
     var pubKeyExists = false;
     var pubK = localStorage.getItem("noodlePubKey");
     if (pubK) {
@@ -20,21 +21,22 @@ CryptoAPI.prototype = {
     }
 
     var callback = function pubKcallback(aPubKey) {
-      if (!pubKeyExists) {
-        localStorage.setItem("noodlePubKey", aPubKey);
-      }
       // send this up to the server to keep with the logged in user metadata
       $.ajax({
         type: 'POST',
         url: "/crypto/send/pubkey",
-               data: { pubKey: aPubKey,
-                       senderNickname: "????",
-                       channel: "????",  },
+        data: { pubKey: aPubKey,
+                senderNickname: "????",
+                channel: "????",  },
         success: function (data) {
-
+          if (!pubKeyExists) {
+            localStorage.setItem("noodlePubKey", aPubKey);
+          }
         },
-        failure: function (data) {
-          throw new Error("NoodleTalk: Public Key exchange failed");
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log(textStatus);
+          console.log(errorThrown);
+          // throw new Error("NoodleTalk: Public Key exchange failed");
         },
         dataType: 'json'
       });
