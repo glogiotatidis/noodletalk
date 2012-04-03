@@ -28,18 +28,18 @@ $(function() {
       }
     }
   };
-  
+
   var hush = function(content,contentID,timeToFadeIn,timeToAppear) {
     if (!hushLock)
     {
       hushLock = 1;
-      
+
       // Disable messaging.
       $('input[name=message]').attr('disabled','disabled');
-      
+
       // Disable scrolling.
       disableScroll();
-      
+
       setTimeout(function() {
         setTimeout(function()
         {
@@ -57,7 +57,7 @@ $(function() {
       },timeToFadeIn);
     }
   }
-  
+
   var unHush = function(contentID,timeToFadeOut,timeToDisappear) {
     setTimeout(function() {
       setTimeout(function()
@@ -66,14 +66,14 @@ $(function() {
         hushLock = 0;
       },timeToFadeOut);
       $('#'+contentID).animate({
-        'width': 0,'height': 0, 
+        'width': 0,'height': 0,
         'margin-left': 0, 'margin-top': 0 },
         timeToDisappear,
         function() {}
       );
     },timeToDisappear);
   }
-  
+
   var updateMessage = function(data) {
     // Update the message
     var message = $.trim(data.message);
@@ -90,6 +90,27 @@ $(function() {
           myPost = false;
         }
 
+      } else if (data.pubkey) {
+        // format pubkey as a button to click in order to save it to localStorage fo rfuture reference
+        var keyLabel = currentChannel + ":" + data.nickname;
+        var storedPubKey = localStorage.getItem(keyLabel);
+        if (!storedPubKey || (storedPubKey != data.pubkey)) {
+          localStorage.setItem(keyLabel, data.pubkey);
+
+          // Now we should let the user know that the colleague's public key
+          // has been stored locally
+          var msg = $('<li class="action font' +
+                      data.font + '" data-created="' +
+                      data.created +
+                      '"><p>' +
+                      data.nickname +
+                      ' has provided a public key to optionally secure conversations.' +
+                      '</p><a href="#" class="delete">x</a></li>');
+
+          console.log("localStorage:   " + keyLabel + ":" + localStorage[keyLabel]);
+          console.log(msg);
+        }
+        // The colleague's pubKey should already be up to date and in localStorage
       } else {
         var highlight = '';
         var nickReference = data.message.split(': ')[0];
@@ -134,10 +155,10 @@ $(function() {
       // Add new message
       $('body #messages ol').prepend(msg);
     }
-    
+
     messagesUnread += 1;
     document.title = '#' + $('body').data('channel') + ' (' + messagesUnread + ')';
-    
+
     // Version checking: if we have a mismatch of our local version and the server version force a refresh.
     if (data.version)
     {
@@ -168,12 +189,12 @@ $(function() {
 
     // Update the user list
     userList = data.user_list;
-    
+
     // Update the user count
     // jcw: Adding one in this call only because we haven't counted our own connection yet.
     userCount = parseInt(data.connected_clients, 10)+1;
     $('#info .connected span').text(userCount);
-    
+
     // Keep list sane, compile tab completion, etc.
     keepListSane();
   });
@@ -214,7 +235,7 @@ $(function() {
   $('form').submit(function(ev) {
     ev.preventDefault();
     var self = $(this);
-    
+
     checkCommands(self);
 
     if(!commandIsMatched && !isSubmitting) {
