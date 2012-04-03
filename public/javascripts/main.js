@@ -92,7 +92,7 @@ $(function() {
 
       } else if (data.pubkey) {
         // format pubkey as a button to click in order to save it to localStorage fo rfuture reference
-        var keyLabel = currentChannel + ":" + data.nickname;
+        var keyLabel = $('body').data('channel') + ":" + data.nickname;
         var storedPubKey = localStorage.getItem(keyLabel);
         if (!storedPubKey || (storedPubKey != data.pubkey)) {
           localStorage.setItem(keyLabel, data.pubkey);
