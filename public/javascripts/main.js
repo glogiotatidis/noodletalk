@@ -90,21 +90,25 @@ $(function() {
           myPost = false;
         }
 
-      } else if (data.action_type === 'pubkey-exchange') {
+      } else if (data.pubkey) {
         // format pubkey as a button to click in order to save it to localStorage fo rfuture reference
-        var keyLabel = currentChannel + ":" + data.senderNickname;
+        var keyLabel = currentChannel + ":" + data.nickname;
         var storedPubKey = localStorage.getItem(keyLabel);
-        if (!storedPubKey || (storedPubKey != data.pubKey)) {
-          localStorage.setItem(keyLabel, data.pubKey);
+        if (!storedPubKey || (storedPubKey != data.pubkey)) {
+          localStorage.setItem(keyLabel, data.pubkey);
+
           // Now we should let the user know that the colleague's public key
           // has been stored locally
           var msg = $('<li class="action font' +
                       data.font + '" data-created="' +
                       data.created +
                       '"><p>' +
-                      data.senderNickname +
-                      ' has provided a public key to secure this conversation.' +
+                      data.nickname +
+                      ' has provided a public key to optionally secure conversations.' +
                       '</p><a href="#" class="delete">x</a></li>');
+
+          console.log("localStorage:   " + keyLabel + ":" + localStorage[keyLabel]);
+          console.log(msg);
         }
         // The colleague's pubKey should already be up to date and in localStorage
       } else {

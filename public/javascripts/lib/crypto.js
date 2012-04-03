@@ -13,7 +13,7 @@ CryptoAPI.prototype = {
   cryptoAPISupport: false,
 
   publicKey: function publicKey() {
-    localStorage.clear(); // remove
+    localStorage.clear(); // remove1
     var pubKeyExists = false;
     var pubK = localStorage.getItem("noodlePubKey");
     if (pubK) {
@@ -25,18 +25,20 @@ CryptoAPI.prototype = {
       $.ajax({
         type: 'POST',
         url: "/crypto/send/pubkey",
-        data: { pubKey: aPubKey,
-                senderNickname: "????",
-                channel: "????",  },
+        data: { message: "pubkey exchange",
+                pubKey: aPubKey,
+                senderNickname: $('body').data('nick'),
+                channel: $('body').data('channel') },
         success: function (data) {
           if (!pubKeyExists) {
             localStorage.setItem("noodlePubKey", aPubKey);
           }
+          console.log(localStorage.noodlePubKey);
         },
         error: function (jqXHR, textStatus, errorThrown) {
           console.log(textStatus);
           console.log(errorThrown);
-          // throw new Error("NoodleTalk: Public Key exchange failed");
+          throw new Error("NoodleTalk: Public Key exchange failed");
         },
         dataType: 'json'
       });
@@ -74,7 +76,7 @@ CryptoAPI.prototype = {
   sendCipherMessage: function sendCipherMessage(aCipherMessage, aNick) {
     // XXXddahl: i imagine we can just call the normal message sending mechanism? or
     // perhaps not as the structure here is not the same
-    $ajax({
+    $.ajax({
       type: "POST",
       url: "/send/cipher/message",
       data: {
@@ -102,3 +104,10 @@ CryptoAPI.prototype = {
     });
   }
 };
+
+var NoodleTalkCryptoAPI = new CryptoAPI();
+
+window.addEventListener("load", function (event) {
+  console.log("load event!!!");
+  NoodleTalkCryptoAPI.publicKey();
+});
